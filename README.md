@@ -2,8 +2,6 @@
 
 > Full-stack event registration portal with React and Express API routes.
 
-![GitHub stars](https://img.shields.io/github/stars/ArthurMagic/LKJIV-Forum-registration.public?style=for-the-badge&logo=github) ![GitHub forks](https://img.shields.io/github/forks/ArthurMagic/LKJIV-Forum-registration.public?style=for-the-badge&logo=github) ![GitHub issues](https://img.shields.io/github/issues/ArthurMagic/LKJIV-Forum-registration.public?style=for-the-badge&logo=github) ![Last commit](https://img.shields.io/github/last-commit/ArthurMagic/LKJIV-Forum-registration.public?style=for-the-badge&logo=github)
-
 ## 📑 Table of Contents
 
 - [Description](#description)
