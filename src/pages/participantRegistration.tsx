@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle2, MapPin, CalendarDays, Users, ArrowRight, ArrowLeft, Loader2, Sparkles, Building2, User, Mail } from 'lucide-react';
+import { CheckCircle2, MapPin, CalendarDays, Users, ArrowRight, ArrowLeft, Loader2, HeartHandshake, MessagesSquare, Building2, User, Mail } from 'lucide-react';
 
 const DISTRICTS_MAP = [
   // Mitte (Center)
@@ -385,20 +385,9 @@ export default function ParticipantRegistration() {
         <header className="w-full flex justify-between items-center mb-8 relative z-20">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-md bg-[#E3000F] flex items-center justify-center text-white font-bold text-lg shadow-sm">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
+              <MessagesSquare width="24"
                 height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M16 10a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 14.286V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                <path d="M20 9a2 2 0 0 1 2 2v10.286a.71.71 0 0 1-1.212.502l-2.202-2.202A2 2 0 0 0 17.172 19H10a2 2 0 0 1-2-2v-1" />
-              </svg>
+                viewBox="0 0 24 24"/>
             </div>
             <span className="font-semibold text-slate-800 tracking-tight hidden sm:inline-block">
               LKJIV-Forum Berlin
@@ -417,7 +406,7 @@ export default function ParticipantRegistration() {
 
             <div className="text-center relative z-10 mb-12 pt-4">
               <div className="inline-flex items-center justify-center p-3 bg-red-50 text-[#E3000F] rounded-2xl mb-6 shadow-sm border border-red-100">
-                <Sparkles className="w-6 h-6" />
+                <HeartHandshake className="w-6 h-6" />
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight max-w-4xl mb-6 text-slate-900 leading-tight">
                 Anmeldung
