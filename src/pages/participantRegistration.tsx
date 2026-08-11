@@ -264,8 +264,8 @@ export default function ParticipantRegistration() {
   const [adultNames, setAdultNames] = useState<string[]>([]);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [website_hp, setWebsiteHp] = useState(''); // Honeypot-Feld
 
   // Database connection
   useEffect(() => {
@@ -342,12 +342,13 @@ export default function ParticipantRegistration() {
           contactPerson,
           emailManagement,
           email,
-          youthCount,
-          adultCount,
+          youthCount: youthCount ?? 0,
+          adultCount: adultCount ?? 0,
           youthNames,
           adultNames,
           selectedDates,
           notes,
+          website_hp,
         }),
       });
 
@@ -387,7 +388,7 @@ export default function ParticipantRegistration() {
             <div className="w-8 h-8 rounded-md bg-[#E3000F] flex items-center justify-center text-white font-bold text-lg shadow-sm">
               <MessagesSquare width="24"
                 height="24"
-                viewBox="0 0 24 24"/>
+                viewBox="0 0 24 24" />
             </div>
             <span className="font-semibold text-slate-800 tracking-tight hidden sm:inline-block">
               LKJIV-Forum Berlin
@@ -710,7 +711,7 @@ export default function ParticipantRegistration() {
                                   className={`font-medium block transition-colors ${isChecked ? 'text-emerald-950 font-semibold' : 'text-slate-700'
                                     }`}
                                 >
-                                  {date.weekday}, {date.date} {date.location ? `- ${date.location}` : ""}
+                                  {date.weekday}, {date.date}{date.time ? `, ${date.time}` : ""} {date.location ? `- ${date.location}` : ""}
                                 </span>
 
                                 {/* Live-Counter (Anzahl der Stimmen / Prozent) */}
@@ -742,9 +743,25 @@ export default function ParticipantRegistration() {
                         className="min-h-[120px] bg-slate-50 focus-visible:bg-white resize-y"
                       />
                     </div>
+                    <div className="space-y-3 text-sm font-medium text-slate-600 bg-white/80 px-4 py-1.5">
+                      <input type="checkbox" id="Datenschutzerklaerung" name="Datenschutzerklaerung"></input>
+                      <label> Hiermit stimmen wir der Verarbeitung unserer Eingebenen Daten gemäß der DSGVO und der Datenschutzerklärung zu.</label>
+                    </div>
 
                   </CardContent>
-
+                  {/* 🛑 HONEYPOT FELD: Für menschliche Nutzer unsichtbar */}
+                  <div style={{ display: 'none' }} aria-hidden="true">
+                    <label htmlFor="website_hp">Bitte dieses Feld leer lassen</label>
+                    <input
+                      type="text"
+                      id="website_hp"
+                      name="website_hp"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={website_hp}
+                      onChange={(e) => setWebsiteHp(e.target.value)}
+                    />
+                  </div>
                   <CardFooter className="flex flex-col sm:flex-row justify-between gap-4 border-t border-slate-100 p-6 md:p-8 bg-slate-50/50 rounded-b-xl">
                     <Button variant="ghost" size="lg" className="w-full sm:w-auto text-slate-500" onClick={() => setStep(1)}>
                       <ArrowLeft className="w-4 h-4 mr-2" /> Zurück
