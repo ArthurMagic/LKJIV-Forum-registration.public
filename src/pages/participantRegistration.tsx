@@ -331,9 +331,18 @@ export default function ParticipantRegistration() {
         });
 
         if (!response.ok) {
+          const errorData = await response.json();
+
+          if (errorData.details) {
+            // Zod-Fehlerarrays aus allen Feldern in eine einfache Liste zusammenfassen
+            const messages = Object.values(errorData.details).flat();
+
+            toast.error(messages.join('\n'));
+          } else {
+            toast.error(errorData.error || 'Fehler beim Senden');
+          }
           throw new Error('Fehler beim Senden');
         }
-
         setStep(3);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
@@ -713,7 +722,7 @@ export default function ParticipantRegistration() {
                                     className={`text-sm font-bold block ${isChecked ? 'text-emerald-700' : 'text-slate-500'
                                       }`}
                                   >
-                                  {currentVotes} {currentVotes === 1 ? 'Stimme' : 'Stimmen'}
+                                    {currentVotes} {currentVotes === 1 ? 'Stimme' : 'Stimmen'}
                                   </span>
                                   <span className="text-xs text-slate-400 font-medium">
                                     {percentage}%

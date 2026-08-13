@@ -47,7 +47,7 @@ router.post('/register', async (req, res) => {
     if (!result.success) {
       return res.status(400).json({ 
         error: 'Ungültige Eingaben', 
-        details: result.error.format() 
+        details: result.error.flatten().fieldErrors 
       });
     }
 
