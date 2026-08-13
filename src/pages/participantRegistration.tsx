@@ -7,6 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { SiteFooter } from '@/components/ui/siteFooter';
+import { Link } from 'react-router-dom';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
 import { CheckCircle2, MapPin, CalendarDays, Users, ArrowRight, ArrowLeft, Loader2, HeartHandshake, MessagesSquare, Building2, User, Mail } from 'lucide-react';
 
 const DISTRICTS_MAP = [
@@ -227,6 +229,7 @@ export default function ParticipantRegistration() {
   const [adultNames, setAdultNames] = useState<string[]>([]);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
+  const [privacyPolicyAgreement, setPrivacyPolicyAgreement] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [website_hp, setWebsiteHp] = useState(''); // Honeypot-Feld
 
@@ -263,16 +266,19 @@ export default function ParticipantRegistration() {
   }, [adultCount]);
 
   const checkNameCount = () => {
-    if (youthCount === 0 && adultCount === 0) {
+    if (youthCount === undefined && adultCount === undefined) {
+      toast.error("Es muss mindestens eine*n Teilnehmer*in geben")
       return false;
     };
     for (let i = 0; i < youthNames.length; i++) {
       if (youthNames[i].trim() === '') {
+        toast.error("Nicht alle jugen Menschen haben ein Namenschild")
         return false;
       }
     };
     for (let i = 0; i < adultNames.length; i++) {
       if (adultNames[i].trim() === '') {
+        toast.error("Nicht alle Begleitungen haben ein Namenschild")
         return false;
       }
     };
@@ -282,50 +288,60 @@ export default function ParticipantRegistration() {
   const emailValid = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!email && !emailManagement) return false;
+    if (!email && !emailManagement) {
+      toast.error('Es muss mindestens eine E-Mail Adresse angegeben werden');
+      return false;
+    }
 
-    if (email && !emailRegex.test(email)) return false;
-    if (emailManagement && !emailRegex.test(emailManagement)) return false;
-
+    if (email && !emailRegex.test(email)) {
+      toast.error('Die Gremium E-Mail Adressen scheint keine E-Mail Adresse zu sein');
+      return false;
+    };
+    if (emailManagement && !emailRegex.test(emailManagement)) {
+      toast.error('Die Geschäftstellen E-Mail Adressen scheint keine E-Mail Adresse zu sein');
+      return false;
+    };
     return true;
   };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    if (emailValid() && checkNameCount()) {
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            district: selectedDistrict,
+            gremium,
+            contactPerson,
+            emailManagement,
+            email,
+            youthCount: youthCount ?? 0,
+            adultCount: adultCount ?? 0,
+            youthNames,
+            adultNames,
+            selectedDates,
+            notes,
+            website_hp,
+          }),
+        });
 
-    try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          district: selectedDistrict,
-          gremium,
-          contactPerson,
-          emailManagement,
-          email,
-          youthCount: youthCount ?? 0,
-          adultCount: adultCount ?? 0,
-          youthNames,
-          adultNames,
-          selectedDates,
-          notes,
-          website_hp,
-        }),
-      });
+        if (!response.ok) {
+          throw new Error('Fehler beim Senden');
+        }
 
-      if (!response.ok) {
-        throw new Error('Fehler beim Senden');
+        setStep(3);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsSubmitting(false);
       }
-
-      setStep(3);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -337,6 +353,19 @@ export default function ParticipantRegistration() {
         '--radius': '0.75rem',
       } as React.CSSProperties}
     >
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable={false}
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
       {/* Decorative background blobs */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[20%] -right-[10%] w-[70%] h-[70%] rounded-full bg-red-100/40 blur-3xl opacity-50" />
@@ -519,7 +548,7 @@ export default function ParticipantRegistration() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-semibold text-slate-700">E-Mail-Adresse des Gremiums<span className="text-[#E3000F]">*</span></Label>
+                        <Label className="text-sm font-semibold text-slate-700">E-Mail-Adresse des Gremiums</Label>
                         <Input
                           type="email"
                           value={email}
@@ -532,7 +561,7 @@ export default function ParticipantRegistration() {
                       </div>
                       <br></br>
                       <div className="space-y-2">
-                        <Label className="text-sm font-semibold text-slate-700">Geschäftsführung</Label>
+                        <Label className="text-sm font-semibold text-slate-700">Geschäftsführung<span className="text-[#E3000F]">*</span></Label>
                         <Input
                           value={contactPerson}
                           onChange={e => setContactPerson(e.target.value)}
@@ -541,7 +570,7 @@ export default function ParticipantRegistration() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-semibold text-slate-700">E-Mail-Adresse der Geschäftsführung</Label>
+                        <Label className="text-sm font-semibold text-slate-700">E-Mail-Adresse der Geschäftsführung </Label>
                         <Input
                           type="email"
                           value={emailManagement}
@@ -557,7 +586,7 @@ export default function ParticipantRegistration() {
                     {/* Counts */}
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-3">
-                        <Label className="text-sm font-semibold text-slate-700">Anzahl teilnehmender Jugendlicher<span className="text-[#E3000F]">*</span></Label>
+                        <Label className="text-sm font-semibold text-slate-700">Anzahl teilnehmender Jugendlicher</Label>
                         <Input
                           type="number"
                           min="0" max="5"
@@ -568,7 +597,7 @@ export default function ParticipantRegistration() {
                         />
                       </div>
                       <div className="space-y-3">
-                        <Label className="text-sm font-semibold text-slate-700">Anzahl pädagogischer Begleitungen<span className="text-[#E3000F]">*</span></Label>
+                        <Label className="text-sm font-semibold text-slate-700">Anzahl pädagogischer Begleitungen</Label>
                         <Input
                           type="number"
                           min="0" max="3"
@@ -707,8 +736,8 @@ export default function ParticipantRegistration() {
                       />
                     </div>
                     <div className="space-y-3 text-sm font-medium text-slate-600 bg-white/80 px-4 py-1.5">
-                      <input type="checkbox" id="Datenschutzerklaerung" name="Datenschutzerklaerung"></input>
-                      <label> Hiermit stimmen wir der Verarbeitung unserer Eingebenen Daten gemäß der DSGVO und der Datenschutzerklärung zu.</label>
+                      <input type="checkbox" id="Datenschutzerklaerung" name="Datenschutzerklaerung" checked={privacyPolicyAgreement} onChange={(e) => setPrivacyPolicyAgreement(e.target.checked)}></input>
+                      <label> Wir haben die <Link className="transition-colors text-[#E3000F] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E3000F] focus-visible:ring-offset-2" to="/datenschutz"> Datenschutzerklärung </ Link> zur Kenntnis genommen und wir stimmen der Verarbeitung unserer Daten für das Forum zu.</label>
                     </div>
 
                   </CardContent>
@@ -733,7 +762,7 @@ export default function ParticipantRegistration() {
                       size="lg"
                       type="submit"
                       onClick={handleSubmit}
-                      disabled={!gremium || !contactPerson || (!email && !emailManagement) || selectedDates.length === 0 || !checkNameCount() || !emailValid() || isSubmitting}
+                      disabled={!gremium || !contactPerson || selectedDates.length === 0 || !privacyPolicyAgreement || isSubmitting}
                       className="w-full sm:w-auto px-8 rounded-full shadow-md"
                     >
                       {isSubmitting ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <CheckCircle2 className="w-5 h-5 mr-2" />}

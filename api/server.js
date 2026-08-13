@@ -32,7 +32,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api', healthRoutes);
-app.use('/api/register', registerLimiter, registrationRouter);
+app.use('/api/register', registerLimiter, registerRoutes);
 app.use('/api', dateRoutes);
 
 const PORT = process.env.PORT || 5000;

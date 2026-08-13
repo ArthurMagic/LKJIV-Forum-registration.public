@@ -4,8 +4,6 @@ import { z } from 'zod';
 
 const router = Router();
 
-import { z } from 'zod';
-
 const RegisterSchema = z.object({
   // Pflichtfelder
   district: z.string().trim().min(2, "Bitte wähle einen Bezirk aus").max(100),
