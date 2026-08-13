@@ -13,6 +13,7 @@ dotenv.config();
 const app = express();
 // 1. GLOBALE MIDDLEWARES (Müssen VOR allen Routen stehen)
 app.use(helmet());
+app.set('trust proxy', 1);
 
 app.use(cors({ 
   origin: 'https://lkjiv-forum.noip.at' // NUR deine Frontend-Domain erlauben
@@ -32,7 +33,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api', healthRoutes);
-app.use('/api/register', registerLimiter, registerRoutes);
+app.use('/api', registerLimiter, registerRoutes);
 app.use('/api', dateRoutes);
 
 const PORT = process.env.PORT || 5000;

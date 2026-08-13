@@ -18,7 +18,8 @@ function formatDate(dates) {
             time: dateObject.toLocaleTimeString('de-DE', {
                 hour: '2-digit',
                 minute: '2-digit'
-            }) // Format: "14:17"
+            }), // Format: "14:17"
+            votes: parseInt(d.votes)
         };
     });
 }
@@ -30,7 +31,7 @@ router.get('/date', async (req, res) => {
         
         // 2. Zeilen aus dem Resultat-Objekt lesen
         const data = result.rows;
-
+        
         // 3. Daten formatieren
         const formattedDates = formatDate(data);
 

@@ -241,6 +241,7 @@ export default function ParticipantRegistration() {
         .catch(err => {
           console.error('Error fetching dates:', err);
         })
+      console.debug("Debug dates", data);
       setDates(data ?? []);
     };
     fetchDates();
@@ -712,7 +713,7 @@ export default function ParticipantRegistration() {
                                     className={`text-sm font-bold block ${isChecked ? 'text-emerald-700' : 'text-slate-500'
                                       }`}
                                   >
-                                    {currentVotes} {currentVotes === 1 ? 'Stimme' : 'Stimmen'}
+                                  {currentVotes} {currentVotes === 1 ? 'Stimme' : 'Stimmen'}
                                   </span>
                                   <span className="text-xs text-slate-400 font-medium">
                                     {percentage}%

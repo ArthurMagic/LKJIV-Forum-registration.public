@@ -34,12 +34,11 @@ const RegisterSchema = z.object({
 
 router.post('/register', async (req, res) => {
   console.debug('Received registration request:', req.body);
-  const data = req.body;
 
   try {
     // SCHRITT A: Honeypot-Prüfung (Bot-Abwehr)
     if (req.body.website_hp) {
-      // Lautlos abbrechen: Bot denkt es war erfolgreich, Daten werden aber nicht gespeichert
+      // Lautlos abbrechen: Bot denkt es war erfolgreich
       return res.status(200).json({ success: true, message: 'Registration successful!' });
     }
 
@@ -52,31 +51,57 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    const { name, email, selectedDates } = result.data;
+    // Verwende ab hier ausschließlich die gesäuberten/validierten Daten!
+    const validData = result.data;
 
-    // 1. Daten in PostgreSQL einfügen (Sichere Parameterized Query!)
-    // Pass die Spaltennamen (name, email, etc.) an deine Postgres-Tabelle an
+    // 1. Daten in PostgreSQL einfügen
     const insertQuery = `
-      INSERT INTO "lkjiv-registration" (district, gremium, contactPerson, emailManagement, email, youthCount, adultCount, youthNames, adultNames, selectedDates, notes) 
-      VALUES ($1, $2, $3, $4, $5, $5, $6, $7, $8, $9, $10, $11) 
+      INSERT INTO "lkjiv-registration" (
+        district, 
+        gremium, 
+        "contactPerson", 
+        "emailManagement", 
+        email, 
+        "youthCount", 
+        "adultCount", 
+        "youthNames", 
+        "adultNames", 
+        "selectedDates", 
+        notes
+      ) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
       RETURNING *
     `;
 
-    const insertValues = [data.district, data.gremium, data.contactPerson, data.emailManagement, data.email, data.youthCOunt, data.adultCount, data.youthNames, data.adultNames, data.selectedDates, data.notes];
+    const insertValues = [
+      validData.district,
+      validData.gremium,
+      validData.contactPerson,
+      validData.emailManagement,
+      validData.email,
+      validData.youthCount,
+      validData.adultCount,
+      JSON.stringify(validData.youthNames || []),
+      JSON.stringify(validData.adultNames || []),
+      JSON.stringify(validData.selectedDates || []),
+      validData.notes
+    ];
 
     await db.query(insertQuery, insertValues);
     console.debug('Database insertion successful');
 
-    // 2. Stimmen erhöhen (RPC-Funktion)
-    if (data.selectedDates && data.selectedDates.length > 0) {
-      await db.query('SELECT inc_date_votes($1)', [data.selectedDates]);
+    // 2. Stimmen erhöhen (RPC-Funktion mit explizitem JSONB-Cast)
+    if (validData.selectedDates && validData.selectedDates.length > 0) {
+      await db.query('SELECT inc_date_votes($1::jsonb)', [
+        JSON.stringify(validData.selectedDates)
+      ]);
+      console.debug('Date votes updated successfully');
     }
 
     return res.status(200).json({ message: 'Registration successful!' });
 
   } catch (err) {
     console.error('Fehler bei der Registrierung:', err);
-    // Gib dem Client keine rohen DB-Fehlermeldungen preis (Sicherheitsrisiko)
     return res.status(500).json({ error: 'Fehler beim Speichern der Registrierung' });
   }
 });
