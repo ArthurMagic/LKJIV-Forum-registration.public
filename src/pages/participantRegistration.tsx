@@ -159,7 +159,7 @@ function DistrictItem({
   const centerY = center.y;
 
   // Schriftgröße dynamisch für lange oder kleine Bezirke anpassen
-  const customFontSize = d.fontSize || (d.short.length > 1 || d.short.length > 12 ? '22' : '28');
+  const customFontSize = d.fontSize || (d.short.length > 1 || d.short.length > 24 ? '48' : '50');
 
   return (
     <g
@@ -429,9 +429,11 @@ export default function ParticipantRegistration() {
                 </div>
 
                 <div className="relative w-full max-w-3xl aspect-[1.3] mb-12 group">
-                  <svg viewBox="600 150 2300 2200"
-                    preserveAspectRatio="xMidYMid slice" // 2. Füllt den Container komplett ohne Verzerrung
-                    className="w-full h-full overflow-visible">
+                  <svg
+                    viewBox="600 400 2300 2200"
+                    preserveAspectRatio="xMidYMid slice"
+                    className="w-full h-full overflow-visible scale-y-150 origin-top"
+                  >
                     {/* Shadow Filter Definition */}
                     <defs>
                       <filter id="district-shadow" x="-20%" y="-20%" width="140%" height="140%">
