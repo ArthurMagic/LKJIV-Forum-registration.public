@@ -423,7 +423,7 @@ export default function ParticipantRegistration() {
             </div>
 
             <Card className="w-full max-w-5xl bg-white/95 backdrop-blur-md border-slate-200/80 shadow-2xl shadow-slate-200/50 rounded-3xl overflow-hidden relative z-10">
-              <div className="p-8 md:p-12 flex flex-col items-center">
+              <div className="p-8 md:p-12 flex flex-col items-center realtive">
                 <div className="text-center mb-8">
                   <h2 className="text-2xl md:text-3xl font-bold mb-3 text-slate-900">Welchen Bezirk vertrittst du?</h2>
                 </div>
@@ -432,7 +432,7 @@ export default function ParticipantRegistration() {
                   <svg
                     viewBox="600 400 2300 2200"
                     preserveAspectRatio="xMidYMid slice"
-                    className="w-full h-full overflow-visible scale-y-150 origin-top"
+                    className="z-0 w-full h-full overflow-visible scale-y-[1.5] origin-top"
                   >
                     {/* Shadow Filter Definition */}
                     <defs>
@@ -483,7 +483,7 @@ export default function ParticipantRegistration() {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     setStep(2);
                   }}
-                  className={`rounded-full px-10 h-14 text-lg transition-all ${!selectedDistrict ? 'opacity-50' : 'shadow-xl shadow-red-500/20 hover:scale-105 hover:shadow-red-500/30'}`}
+                  className={`z-10 rounded-full px-10 h-14 text-lg transition-all ${!selectedDistrict ? 'opacity-50' : 'shadow-xl shadow-red-500/20 hover:scale-105 hover:shadow-red-500/30'}`}
                 >
                   Weiter zum Formular <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>

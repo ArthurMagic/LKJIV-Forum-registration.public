@@ -70,6 +70,16 @@
   --text-9xl--line-height: 1;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
 /* LIGHT MODE - Default theme with placeholder values */
 :root {
   --button-outline: rgba(0,0,0, .10);
