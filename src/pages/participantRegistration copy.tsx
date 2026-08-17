@@ -506,7 +506,7 @@ export default function ParticipantRegistrationNew() {
             </Card>
 
             {/* CircularText = eigenes Element */}
-            <div className="flex justify-center md:-mt-12 items-center order-3 md:order-2">
+            <div className="flex justify-center md:-mt-48 items-center order-3 md:order-2">
               <CircularText
                 text="BERLIN · JUGEND · BETEILIGUNG · "
                 onHover="speedUp"
