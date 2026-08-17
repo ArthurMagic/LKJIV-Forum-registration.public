@@ -20,7 +20,7 @@ const SkylineTile = () => (
   >
     <g>
       {SKYLINE_PATHS.map((d, i) => (
-        <path key={i} fill="#fef2f2" d={d} />
+        <path key={i} className="fill-[#355C7D] drop-shadow-lg" d={d} />
       ))}
     </g>
   </svg>
@@ -31,7 +31,7 @@ const FooterSkyline = () => (
   <div
     className="w-full overflow-hidden pointer-events-none select-none flex items-end"
     aria-hidden="true"
-    style={{ height: '72px' }}
+    style={{ height: '100px' }}
   >
     {Array.from({ length: 12 }).map((_, i) => (
       <SkylineTile key={i} />
