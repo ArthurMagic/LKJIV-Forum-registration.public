@@ -11,9 +11,11 @@ import NetworkBG from '@/components/ui/net';
 import StrokeText from '@/components/ui/strokeText';
 import CircularText from '@/components/ui/circularText'
 import TextType from '@/components/ui/textType';
+import Stepper, { Step, type StepperRef } from '@/components/ui/stepper'
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
-import { CheckCircle2, MapPin, CalendarDays, Users, ArrowRight, ArrowLeft, Loader2, Building2, User, Mail } from 'lucide-react';
+import Magnet from '@/components/ui/magnetButton';
+import { CheckCircle2, MapPin, CalendarDays, Users, Loader2, Building2, User, Mail } from 'lucide-react';
 
 
 const DISTRICTS_MAP = [
@@ -215,10 +217,11 @@ function DistrictItem({
   );
 }
 
-export default function ParticipantRegistrationNew() {
-  const [step, setStep] = useState(1);
+export default function ParticipantRegistrationNewNew() {
+  const [step, setStep] = useState(0);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [hoveredDistrict, setHoveredDistrict] = useState<string | null>(null);
+  const stepperRef = useRef<StepperRef>(null);
 
   //DB Data
   const [dates, setDates] = useState<any[]>([]);
@@ -348,7 +351,7 @@ export default function ParticipantRegistrationNew() {
           }
           throw new Error('Fehler beim Senden');
         }
-        setStep(3);
+        stepperRef.current?.next();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         console.error(err);
@@ -360,657 +363,619 @@ export default function ParticipantRegistrationNew() {
   };
 
   return (
-    <div
-      className="min-h-[100dvh] bg-[#F7F5F1] text-slate-900 font-sans flex flex-col relative overflow-hidden"
-      style={{
-        '--primary': '356 100% 45%', // Berliner Rot #E3000F
-        '--ring': '356 100% 45%',
-        '--radius': '0.75rem',
-      } as React.CSSProperties}
-    >
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable={false}
-        pauseOnHover
-        theme="light"
-        transition={Bounce}
-      />
-      <NetworkBG />
-      <main className="relative z-10 flex-1 flex flex-col w-full max-w-6xl mx-auto px-4 py-4 md:py-8">
-
-        {/* Header / Logo minimal */}
-        <header className="w-full flex border-b grid-cols-2 justify-between items-center mb-8 relative z-20 pb-2">
-          <div>
-            <div className="font-antonsc text-xl leading-none text-slate-800 scale-[0.65] origin-left md:scale-100">
-              <div className="flex -mb-2">
-                <span className="w-7 text-right"><StrokeText
-                  text="12"
-                  fontFamily="antonsc"
-                  strokeColor="#1E293B"
-                  fillColor="#1E293B"
-                  strokeWidth={0.5}
-                  fontSize={25}
-                  fontWeight={400}
-                  letterSpacing={1}
-                /></span>
-                <span className="ml-2"><StrokeText
-                  text="Bezirke"
-                  fontFamily="antonsc"
-                  strokeColor="#1E293B"
-                  fillColor="#1E293B"
-                  strokeWidth={0.5}
-                  fontSize={25}
-                  fontWeight={400}
-                  letterSpacing={1}
-                /></span>
-              </div>
-
-              <div className="flex -mb-2">
-                <span className="w-7 text-right"><StrokeText
-                  text="1"
-                  fontFamily="antonsc"
-                  strokeColor="#1E293B"
-                  fillColor="#1E293B"
-                  strokeWidth={0.5}
-                  fontSize={25}
-                  fontWeight={400}
-                  letterSpacing={1}
-                /></span>
-                <span className="ml-2"><StrokeText
-                  text="Forum"
-                  fontFamily="antonsc"
-                  strokeColor="#1E293B"
-                  fillColor="#1E293B"
-                  strokeWidth={0.5}
-                  fontSize={25}
-                  fontWeight={400}
-                  letterSpacing={1}
-                /></span>
-              </div>
-
-              <div className="flex -mb-2">
-                <span className="w-7 text-right"><StrokeText
-                  text="1"
-                  fontFamily="antonsc"
-                  strokeColor="#1E293B"
-                  fillColor="#1E293B"
-                  strokeWidth={0.5}
-                  fontSize={25}
-                  fontWeight={400}
-                  letterSpacing={1}
-                /></span>
-                <span className="ml-2"><StrokeText
-                  text="gemeinsame Stimme"
-                  fontFamily="antonsc"
-                  strokeColor="#1E293B"
-                  fillColor="#1E293B"
-                  strokeWidth={0.5}
-                  fontSize={25}
-                  fontWeight={400}
-                  letterSpacing={1}
-                /></span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <TextType
-              text={[
-                {
-                  content: '1. ',
-                  className: 'text-sm md:text-base',
-                },
-                {
-                  content: 'LKJIV-Forum',
-                  className: 'text-base md:text-2xl',
-                },
-              ]}
-              className="font-semibold text-center text-white tracking-tight hidden sm:inline-block"
-              typingSpeed={80}
-            />
-          </div>
-        </header>
-        {step > 1 && step < 3 && (
-          <div className="self-end w-fit text-sm text-right font-medium text-slate-600 bg-white/80 px-4 py-1.5 rounded-full border border-slate-200 shadow-sm backdrop-blur">
-            Schritt {step} von 2
-          </div>
-        )}
-
-        {/* STEP 1: Hero & Map Combined */}
-        {step === 1 && (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-
-            {/* Element A */}
-            <div className="relativ z-10 pr-4 md:row-span-2">
-              <h3 className="text-2xl text-center font-bold mb-3 text-slate-900 pb-4 text-glow-white">
-                Willkommen beim <br />
-                <span className="text-3xl md:text-4xl">1. LKJIV-Forum</span>
-              </h3>
-
-              <p className="font-berlintype text-lg text-justify text-glow-white text-slate-800 md:text-slate-600">Zum ersten Mal möchten sich die Interessenvertretungen der Berliner Bezirke gemeinsam treffen, um sich bezirksübergreifend auszutauschen, Erfahrungen zu teilen und ihre Stimmen zu bündeln. Unabhängig von bezirklichen Grenzen soll mit dem <span className="font-bold">LKJIV-Forum</span> ein gemeinsamer Raum für Austausch, Aussprache und gegenseitige Unterstützung geschaffen werden.<br /> <br />
-
-                Unser übergeordnetes Ziel ist es, die Interessen von Kindern und Jugendlichen gemeinsam und gestärkt gegenüber Politik und Verwaltung zu vertreten. Das LKJIV-Forum soll hierfür eine Plattform bieten, auf der wir uns vernetzen, gemeinsame Herausforderungen besprechen und mögliche gemeinsame Positionen entwickeln können. <br /> <br />
-
-                Im Mittelpunkt des ersten Forums stehen zunächst das <span className="font-bold">Kennenlernen, der gegenseitige Austausch und die gemeinsame Entscheidung darüber, ob und in welcher Form wir dieses Format zukünftig weiterführen möchten.</span > Sollte der Wunsch nach einer Fortführung bestehen, soll das erste Treffen zugleich Raum bieten, um gemeinsam einen passenden Rahmen und mögliche Arbeitsweisen für das Forum zu entwickeln. <br /><br />
-              </p>
-            </div>
-
-            {/* Element B = Card */}
-            <Card className="w-full max-w-5xl bg-white/50 backdrop-blur-md shadow-2xl shadow-slate-200/50 rounded-3xl overflow-hidden relative z-10">
-              {/* deine Card bleibt hier komplett unverändert */}
-            </Card>
-
+    <>
+      {step === 0 && (
+        <>
+          <main className="w-full h-full place-content-center">
             {/* CircularText = eigenes Element */}
-            <div className="flex justify-center md:-mt-48 items-center order-3 md:order-2">
+            <div className="flex md:-mt-48 order-3 md:order-2">
               <CircularText
                 text="BERLIN · JUGEND · BETEILIGUNG · "
                 spinDuration={75}
-                className="custom-class"
+                className="scale-[1.5] md:scale-[2]"
               />
             </div>
+          </main>
+          {setTimeout(() => {
+            setStep(1)
+          }, 5000)}
+        </>
+      )}
+      {step >= 1 && (
+        <div
+          className="min-h-[100dvh] bg-[#F7F5F1] text-slate-900 font-sans flex flex-col relative overflow-hidden"
+          style={{
+            '--primary': '356 100% 45%', // Berliner Rot #E3000F
+            '--ring': '356 100% 45%',
+            '--radius': '0.75rem',
+          } as React.CSSProperties}
+        >
+          <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable={false}
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+          />
+          <NetworkBG />
+          <main className="relative z-10 flex-1 flex flex-col w-full max-w-6xl mx-auto px-4 py-4 md:py-8">
 
-            <Card className="w-full max-w-5xl bg-white/50 backdrop-blur-md border border-slate-200/40 shadow-2xl shadow-slate-200/50 rounded-3xl overflow-hidden relative z-10">
-              <div className="p-12 md:p-15 flex flex-col items-center realtive">
-                <div className="text-center mb-8">
-                  <h2 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 pb-3"><span className="text-3xl">Deine Stimme</span><br />für Berlin</h2>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-3 text-slate-900">Welchen Bezirk vertrittst du?</h2>
+            {/* Header / Logo minimal */}
+            <header className="w-full flex border-b grid-cols-2 justify-between items-center mb-8 relative z-20 pb-2">
+              <div>
+                <div className="font-antonsc text-xl leading-none text-slate-800 scale-[0.65] origin-left md:scale-100">
+                  <div className="flex -mb-2">
+                    <span className="w-7 text-right"><StrokeText
+                      text="12"
+                      fontFamily="antonsc"
+                      strokeColor="#1E293B"
+                      fillColor="#1E293B"
+                      strokeWidth={0.5}
+                      fontSize={25}
+                      fontWeight={400}
+                      letterSpacing={1}
+                    /></span>
+                    <span className="ml-2"><StrokeText
+                      text="Bezirke"
+                      fontFamily="antonsc"
+                      strokeColor="#1E293B"
+                      fillColor="#1E293B"
+                      strokeWidth={0.5}
+                      fontSize={25}
+                      fontWeight={400}
+                      letterSpacing={1}
+                    /></span>
+                  </div>
+
+                  <div className="flex -mb-2">
+                    <span className="w-7 text-right"><StrokeText
+                      text="1"
+                      fontFamily="antonsc"
+                      strokeColor="#1E293B"
+                      fillColor="#1E293B"
+                      strokeWidth={0.5}
+                      fontSize={25}
+                      fontWeight={400}
+                      letterSpacing={1}
+                    /></span>
+                    <span className="ml-2"><StrokeText
+                      text="Forum"
+                      fontFamily="antonsc"
+                      strokeColor="#1E293B"
+                      fillColor="#1E293B"
+                      strokeWidth={0.5}
+                      fontSize={25}
+                      fontWeight={400}
+                      letterSpacing={1}
+                    /></span>
+                  </div>
+
+                  <div className="flex -mb-2">
+                    <span className="w-7 text-right"><StrokeText
+                      text="1"
+                      fontFamily="antonsc"
+                      strokeColor="#1E293B"
+                      fillColor="#1E293B"
+                      strokeWidth={0.5}
+                      fontSize={25}
+                      fontWeight={400}
+                      letterSpacing={1}
+                    /></span>
+                    <span className="ml-2"><StrokeText
+                      text="gemeinsame Stimme"
+                      fontFamily="antonsc"
+                      strokeColor="#1E293B"
+                      fillColor="#1E293B"
+                      strokeWidth={0.5}
+                      fontSize={25}
+                      fontWeight={400}
+                      letterSpacing={1}
+                    /></span>
+                  </div>
                 </div>
+              </div>
+              <div>
+                <TextType
+                  text={[
+                    {
+                      content: '1. ',
+                      className: 'text-sm md:text-base',
+                    },
+                    {
+                      content: 'LKJIV-Forum',
+                      className: 'text-base md:text-2xl',
+                    },
+                  ]}
+                  className="font-semibold text-center text-white tracking-tight hidden sm:inline-block"
+                  typingSpeed={80}
+                />
+              </div>
+            </header>
+            {step > 1 && step < 3 && (
+              <div className="self-end w-fit text-sm text-right font-medium text-slate-600 bg-white/80 px-4 py-1.5 rounded-full border border-slate-200 shadow-sm backdrop-blur">
+                Schritt {step} von 2
+              </div>
+            )}
+            <Stepper
+              initialStep={1}
+              onStepChange={(step) => {
+                console.log(step);
+              }}
+              ref={stepperRef}
+              onFinalStepCompleted={() => console.log("All steps completed!")}
+              backButtonText="← Zurück"
+            >
+              <Step>
+                <div className="relativ z-10 pr-4 md:row-span-2 pr-12 pl-12">
+                  <h3 className="text-2xl text-center font-bold mb-3 text-slate-900 pb-4">
+                    Willkommen beim <br />
+                    <span className="text-3xl text-glow-white md:text-4xl">1. LKJIV-Forum</span>
+                  </h3>
 
-                <div className="z-0 relative w-full max-w-3xl aspect-[1.3] mb-2 group">
-                  <svg
-                    viewBox="600 700 2300 2200"
-                    preserveAspectRatio="xMidYMid slice"
-                    className="w-full h-full overflow-visible scale-y-[1.5] origin-top"
-                  >
-                    {/* Shadow Filter Definition */}
-                    <defs>
-                      <filter id="district-shadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#000000" floodOpacity="0.25" />
-                      </filter>
-                    </defs>
+                  <p className="font-berlintype text-lg text-justify text-slate-800 text-glow-white md:text-slate-600">Zum ersten Mal möchten sich die Interessenvertretungen der Berliner Bezirke gemeinsam treffen, um sich bezirksübergreifend auszutauschen, Erfahrungen zu teilen und ihre Stimmen zu bündeln. Unabhängig von bezirklichen Grenzen soll mit dem <span className="font-bold">LKJIV-Forum</span> ein gemeinsamer Raum für Austausch, Aussprache und gegenseitige Unterstützung geschaffen werden.<br /> <br />
 
-                    {DISTRICTS_MAP
-                      .slice()
-                      .sort((a, b) => {
-                        const aActive = a.id === selectedDistrict || a.id === hoveredDistrict;
-                        const bActive = b.id === selectedDistrict || b.id === hoveredDistrict;
-                        if (aActive && !bActive) return 1;
-                        if (!aActive && bActive) return -1;
-                        return 0;
-                      })
-                      .map((d) => {
-                        const isSelected = selectedDistrict === d.id;
-                        const isHovered = hoveredDistrict === d.id;
-                        const isActive = isSelected || isHovered;
+                    Unser übergeordnetes Ziel ist es, die Interessen von Kindern und Jugendlichen gemeinsam und gestärkt gegenüber Politik und Verwaltung zu vertreten. Das LKJIV-Forum soll hierfür eine Plattform bieten, auf der wir uns vernetzen, gemeinsame Herausforderungen besprechen und mögliche gemeinsame Positionen entwickeln können. <br /> <br />
 
-                        return (
-                          <DistrictItem
-                            key={d.id}
-                            d={d}
-                            isSelected={isSelected}
-                            isHovered={isHovered}
-                            isActive={isActive}
-                            onSelect={setSelectedDistrict}
-                            onHover={setHoveredDistrict}
-                          />
-                        );
-                      })}
-                  </svg>
-                </div>
-                <div className="z-10 text-center mb-6">
-                  <p className="text-slate-600 text-lg">
-                    {selectedDistrict
-                      ? `Du hast den Bezirk ${DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name} ausgewählt.`
-                      : 'Bitte wähle einen Bezirk auf der Karte aus, um fortzufahren.'}
+                    Im Mittelpunkt des ersten Forums stehen zunächst das <span className="font-bold">Kennenlernen, der gegenseitige Austausch und die gemeinsame Entscheidung darüber, ob und in welcher Form wir dieses Format zukünftig weiterführen möchten.</span > Sollte der Wunsch nach einer Fortführung bestehen, soll das erste Treffen zugleich Raum bieten, um gemeinsam einen passenden Rahmen und mögliche Arbeitsweisen für das Forum zu entwickeln. <br /><br />
                   </p>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      stepperRef.current?.next();
+                    }}
+                    className={`z-10 rounded-4 text-lg transition-all 'shadow-xl shadow-red-500/20 hover:scale-105 hover:shadow-red-500/30'`}
+                  >
+                    Weiter
+                  </Button>
                 </div>
-                <Button
-                  size="lg"
-                  disabled={!selectedDistrict}
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    setStep(2);
-                  }}
-                  className={`z-10 rounded-4 px-10 h-14 text-lg transition-all ${!selectedDistrict ? 'opacity-50' : 'shadow-xl shadow-red-500/20 hover:scale-105 hover:shadow-red-500/30'}`}
-                >
-                  Weiter zum Formular <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </div>
-            </Card>
-          </div>
-        )
-        }
+              </Step>
+              <Step>
+                <div className="flex flex-col items-center realtive m-5 md:p-12">
+                  <div className="text-center mb-4 md:mb-8">
+                    <h2 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 pb-3"><span className="text-3xl">Deine Stimme</span><br />für Berlin</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold mb-3 text-slate-900">Welchen Bezirk vertrittst du?</h2>
+                  </div>
 
-        {/* STEP 2: Form */}
-        {step === 2 && (
-          <div className="w-full flex-1 text-2xl flex flex-col animate-in fade-in slide-in-from-right-4 duration-500 relative z-10 pt-12">
-            <div className="grid lg:grid-cols-12 gap-8 items-start">
+                 <div className="z-0 relative w-full max-w-3xl mb-2 group h-[275px] sm:h-[500px] md:h-[600px]">
+                    <svg
+                      viewBox="600 450 2300 2200"
+                      preserveAspectRatio="xMidYMid slice"
+                      className="w-full h-full overflow-visible scale-y-[1.5] origin-top"
+                    >
+                      {/* Shadow Filter Definition */}
+                      <defs>
+                        <filter id="district-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feDropShadow
+                            dx="0"
+                            dy="8"
+                            stdDeviation="12"
+                            floodColor="#000000"
+                            floodOpacity="0.25"
+                          />
+                        </filter>
+                      </defs>
 
-              {/* Left Column: Progress & Context */}
-              <div className="lg:col-span-4 space-y-6">
-                <Card className="bg-white/50 backdrop-blur-md border-slate-200/60 shadow-2xl shadow-slate-200/50">
-                  <CardHeader>
-                    <CardDescription className="text-slate-500 font-medium">Dein gewählter Bezirk</CardDescription>
-                    <CardTitle className="flex items-center gap-2 text-2xl text-[#E3000F]">
-                      <MapPin className="w-6 h-6" /> {DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Button variant="outline" size="sm" className="w-full bg-white" onClick={() => setStep(1)}>
-                      Bezirk ändern
-                    </Button>
-                  </CardContent>
-                </Card>
+                      {DISTRICTS_MAP
+                        .slice()
+                        .sort((a, b) => {
+                          const aActive =
+                            a.id === selectedDistrict || a.id === hoveredDistrict;
+                          const bActive =
+                            b.id === selectedDistrict || b.id === hoveredDistrict;
 
-                <Card className="hidden lg:block border-slate-200/60 shadow-2xl shadow-slate-200/50 bg-white/50 backdrop-blur-md">
-                  <CardContent className="pt-6">
-                    <div className="space-y-6 relative">
-                      <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-slate-100" />
-                      {[
-                        { num: 1, label: 'Start & Bezirk', active: false, done: true },
-                        { num: 2, label: 'Formular', active: true, done: false },
-                        { num: 3, label: 'Bestätigung', active: false, done: false }
-                      ].map((s, idx) => (
-                        <div key={idx} className="flex items-center relative z-10 gap-4">
-                          <div className={`
-                            w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold border-2 transition-all duration-300
-                            ${s.active ? 'border-[#E3000F] bg-red-50 text-[#E3000F] scale-110' : s.done ? 'bg-[#E3000F] border-[#E3000F] text-white' : 'bg-white border-slate-200 text-slate-400'}
-                          `}>
-                            {s.done ? <CheckCircle2 className="w-5 h-5" /> : s.num}
-                          </div>
-                          <span className={`font-medium text-base ${s.active ? 'text-slate-900' : 'text-slate-500'}`}>{s.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-              </div>
-
-              {/* Right Column: Form */}
-              <div className="lg:col-span-8">
-                <Card className="border-slate-200 shadow-xl shadow-slate-200/40 bg-card/50 backdrop-blur-md">
-                  <CardHeader className="bg-white/50 border-b border-slate-100 pb-6 rounded-t-xl">
-                    <CardTitle className="text-2xl">Angaben zur Teilnahme</CardTitle>
-                    <CardDescription className="text-base">
-                      Bitte füllt die Details zu eurem Gremium und den Teilnehmenden aus.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-8 p-6 md:p-8 bg-white/50">
-                    {/* Gremium / Contact / Email */}
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-2 md:col-span-2">
-                        <Label className="text-sm font-semibold text-slate-700">Name des Beteiligungsgremiums <span className="text-[#E3000F]">*</span></Label>
-                        <Input
-                          value={gremium}
-                          onChange={e => setGremium(e.target.value)}
-                          placeholder={`z.B. Kinder- und Jugendinteressensvertretung ${DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name}`}
-                          className="h-11 bg-slate-50 focus-visible:bg-white"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-semibold text-slate-700">E-Mail-Adresse des Gremiums</Label>
-                        <Input
-                          type="email"
-                          value={email}
-                          id="email"
-                          name="email"
-                          onChange={e => setEmail(e.target.value)}
-                          placeholder={`kontakt@${DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name.toLowerCase()}.de`}
-                          className="h-11 bg-slate-50 focus-visible:bg-white"
-                        />
-                      </div>
-                      <br></br>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-semibold text-slate-700">Geschäftsführung<span className="text-[#E3000F]">*</span></Label>
-                        <Input
-                          value={contactPerson}
-                          onChange={e => setContactPerson(e.target.value)}
-                          placeholder="Vorname Nachname"
-                          className="h-11 bg-slate-50 focus-visible:bg-white"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-semibold text-slate-700">E-Mail-Adresse der Geschäftsführung </Label>
-                        <Input
-                          type="email"
-                          value={emailManagement}
-                          onChange={e => setEmailManagement(e.target.value)}
-                          placeholder={`kontakt@${DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name.toLowerCase()}.de`}
-                          className="h-11 bg-slate-50 focus-visible:bg-white"
-                        />
-                      </div>
-                    </div>
-
-                    <Separator className="bg-slate-100" />
-
-                    {/* Counts */}
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <Label className="text-sm font-semibold text-slate-700">Anzahl teilnehmender Jugendlicher</Label>
-                        <Input
-                          type="number"
-                          min="0" max="5"
-                          value={youthCount}
-                          onChange={e => setYouthCount((e.target.value ? parseInt(e.target.value) : 0) > 5 ? 5 : e.target.value ? parseInt(e.target.value) : undefined)}
-                          placeholder="0"
-                          className="h-11 bg-slate-50 focus-visible:bg-white"
-                        />
-                      </div>
-                      <div className="space-y-3">
-                        <Label className="text-sm font-semibold text-slate-700">Anzahl pädagogischer Begleitungen</Label>
-                        <Input
-                          type="number"
-                          min="0" max="3"
-                          value={adultCount}
-                          onChange={e => setAdultCount((e.target.value ? parseInt(e.target.value) : 0) > 3 ? 3 : e.target.value ? parseInt(e.target.value) : undefined)}
-                          placeholder="0"
-                          className="h-11 bg-slate-50 focus-visible:bg-white"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Dynamic names */}
-                    {(youthNames.length > 0 || adultNames.length > 0) && (
-                      <div className="space-y-5 bg-slate-50/80 p-5 md:p-6 rounded-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-300">
-                        <h4 className="font-semibold text-slate-800 flex items-center gap-2">
-                          <Users className="w-5 h-5 text-[#E3000F]" /> Namen für die Namensschilder<span className="text-[#E3000F]">*</span>
-                        </h4>
-                        <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
-                          {youthNames.map((n, i) => (
-                            <div key={`y-${i}`} className="space-y-1.5">
-                              <Label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Jugendliche:r {i + 1}</Label>
-                              <Input
-                                value={n}
-                                onChange={e => { const nm = [...youthNames]; nm[i] = e.target.value; setYouthNames(nm); }}
-                                placeholder="Vorname"
-                                className="bg-white h-10 border-slate-200"
-                              />
-                            </div>
-                          ))}
-                          {adultNames.map((n, i) => (
-                            <div key={`a-${i}`} className="space-y-1.5">
-                              <Label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Begleitung {i + 1}</Label>
-                              <Input
-                                value={n}
-                                onChange={e => { const nm = [...adultNames]; nm[i] = e.target.value; setAdultNames(nm); }}
-                                placeholder="Vorname Nachname"
-                                className="bg-white h-10 border-slate-200"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <Separator className="bg-slate-100" />
-
-                    {/* Dates */}
-                    <div className="space-y-5">
-                      <div>
-                        <Label className="text-lg font-semibold text-slate-800">Mögliche Termine <span className="text-[#E3000F]">*</span></Label>
-                        <p className="text-sm text-slate-500 mt-1">Bitte wählt alle Termine aus, an denen eine Teilnahme für euch möglich ist. Mehrfachauswahl erwünscht.</p>
-                      </div>
-                      <div className="grid gap-3">
-                        {dates.map((date) => {
-                          const isChecked = selectedDates.includes(date.id);
-
-                          // 1. Bereits vorhandene Stimmen + 1, falls der Nutzer es gerade ausgewählt hat
-                          const baseVotes = date.votes || 0; // Passe 'date.votes' an deinen Eigenschaftsnamen an
-                          const currentVotes = baseVotes + (isChecked ? 1 : 0);
-
-                          // 2. Maximalwert für die Prozent-Berechnung ermitteln (Höchste Stimmenzahl aller Termine oder Gesamtteilnehmer)
-                          // Damit der Balken nie über 100% geht, setzen wir mindestens '1' an.
-                          const maxVotes = Math.max(
-                            ...dates.map((d) => (d.votes || 0) + (selectedDates.includes(d.id) ? 1 : 0)),
-                            1
-                          );
-
-                          // 3. Prozentualer Anteil für den Ladebalken
-                          const percentage = Math.round((currentVotes / maxVotes) * 100);
+                          if (aActive && !bActive) return 1;
+                          if (!aActive && bActive) return -1;
+                          return 0;
+                        })
+                        .map((d) => {
+                          const isSelected = selectedDistrict === d.id;
+                          const isHovered = hoveredDistrict === d.id;
+                          const isActive = isSelected || isHovered;
 
                           return (
-                            <label
-                              key={date.id}
-                              className={`
+                            <DistrictItem
+                              key={d.id}
+                              d={d}
+                              isSelected={isSelected}
+                              isHovered={isHovered}
+                              isActive={isActive}
+                              onSelect={() => {
+                                setSelectedDistrict(d.id);
+                                stepperRef.current?.next();
+                              }}
+                              onHover={setHoveredDistrict}
+                            />
+                          );
+                        })}
+                    </svg>
+                  </div>
+                </div>
+              </Step>
+              <Step>
+                <div className="w-full flex-1 text-2xl flex flex-col animate-in fade-in slide-in-from-right-4 duration-500 relative z-10 pt-12">
+                  <div className="grid lg:grid-cols-12 gap-8 items-start">
+
+                    {/* Left Column: Progress & Context */}
+                    <div className="lg:col-span-4 space-y-6">
+                      <Card className="bg-white/50 backdrop-blur-md border-slate-200/60 shadow-2xl shadow-slate-200/50">
+                        <CardHeader>
+                          <CardDescription className="text-slate-500 font-medium">Dein gewählter Bezirk</CardDescription>
+                          <CardTitle className="flex items-center gap-2 text-2xl text-[#E3000F]">
+                            <MapPin className="w-6 h-6" /> {DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Button variant="outline" size="sm" className="w-full bg-white" onClick={() => stepperRef.current?.previous()}>
+                            Bezirk ändern
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Right Column: Form */}
+                    <div className="lg:col-span-8">
+                      <Card className="border-slate-200 shadow-xl shadow-slate-200/40 bg-card/50 backdrop-blur-md">
+                        <CardHeader className="bg-white/50 border-b border-slate-100 pb-6 rounded-t-xl">
+                          <CardTitle className="text-2xl">Angaben zur Teilnahme</CardTitle>
+                          <CardDescription className="text-base">
+                            Bitte füllt die Details zu eurem Gremium und den Teilnehmenden aus.
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-8 p-6 md:p-8 bg-white/50">
+                          {/* Gremium / Contact / Email */}
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2 md:col-span-2">
+                              <Label className="text-sm font-semibold text-slate-700">Name des Beteiligungsgremiums <span className="text-[#E3000F]">*</span></Label>
+                              <Input
+                                value={gremium}
+                                onChange={e => setGremium(e.target.value)}
+                                placeholder={`z.B. Kinder- und Jugendinteressensvertretung ${DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name}`}
+                                className="h-11 bg-slate-50 focus-visible:bg-white"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-sm font-semibold text-slate-700">E-Mail-Adresse des Gremiums</Label>
+                              <Input
+                                type="email"
+                                value={email}
+                                id="email"
+                                name="email"
+                                onChange={e => setEmail(e.target.value)}
+                                placeholder={`kontakt@${DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name.toLowerCase()}.de`}
+                                className="h-11 bg-slate-50 focus-visible:bg-white"
+                              />
+                            </div>
+                            <br></br>
+                            <div className="space-y-2">
+                              <Label className="text-sm font-semibold text-slate-700">Geschäftsführung<span className="text-[#E3000F]">*</span></Label>
+                              <Input
+                                value={contactPerson}
+                                onChange={e => setContactPerson(e.target.value)}
+                                placeholder="Vorname Nachname"
+                                className="h-11 bg-slate-50 focus-visible:bg-white"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-sm font-semibold text-slate-700">E-Mail-Adresse der Geschäftsführung </Label>
+                              <Input
+                                type="email"
+                                value={emailManagement}
+                                onChange={e => setEmailManagement(e.target.value)}
+                                placeholder={`kontakt@${DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name.toLowerCase()}.de`}
+                                className="h-11 bg-slate-50 focus-visible:bg-white"
+                              />
+                            </div>
+                          </div>
+
+                          <Separator className="bg-slate-100" />
+
+                          {/* Counts */}
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-3">
+                              <Label className="text-sm font-semibold text-slate-700">Anzahl teilnehmender Jugendlicher</Label>
+                              <Input
+                                type="number"
+                                min="0" max="5"
+                                value={youthCount}
+                                onChange={e => setYouthCount((e.target.value ? parseInt(e.target.value) : 0) > 5 ? 5 : e.target.value ? parseInt(e.target.value) : undefined)}
+                                placeholder="0"
+                                className="h-11 bg-slate-50 focus-visible:bg-white"
+                              />
+                            </div>
+                            <div className="space-y-3">
+                              <Label className="text-sm font-semibold text-slate-700">Anzahl pädagogischer Begleitungen</Label>
+                              <Input
+                                type="number"
+                                min="0" max="3"
+                                value={adultCount}
+                                onChange={e => setAdultCount((e.target.value ? parseInt(e.target.value) : 0) > 3 ? 3 : e.target.value ? parseInt(e.target.value) : undefined)}
+                                placeholder="0"
+                                className="h-11 bg-slate-50 focus-visible:bg-white"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Dynamic names */}
+                          {(youthNames.length > 0 || adultNames.length > 0) && (
+                            <div className="space-y-5 bg-slate-50/80 p-5 md:p-6 rounded-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-300">
+                              <h4 className="font-semibold text-slate-800 flex items-center gap-2">
+                                <Users className="w-5 h-5 text-[#E3000F]" /> Namen für die Namensschilder<span className="text-[#E3000F]">*</span>
+                              </h4>
+                              <div className="grid md:grid-cols-2 gap-x-6 gap-y-4">
+                                {youthNames.map((n, i) => (
+                                  <div key={`y-${i}`} className="space-y-1.5">
+                                    <Label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Jugendliche:r {i + 1}</Label>
+                                    <Input
+                                      value={n}
+                                      onChange={e => { const nm = [...youthNames]; nm[i] = e.target.value; setYouthNames(nm); }}
+                                      placeholder="Vorname"
+                                      className="bg-white h-10 border-slate-200"
+                                    />
+                                  </div>
+                                ))}
+                                {adultNames.map((n, i) => (
+                                  <div key={`a-${i}`} className="space-y-1.5">
+                                    <Label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Begleitung {i + 1}</Label>
+                                    <Input
+                                      value={n}
+                                      onChange={e => { const nm = [...adultNames]; nm[i] = e.target.value; setAdultNames(nm); }}
+                                      placeholder="Vorname Nachname"
+                                      className="bg-white h-10 border-slate-200"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <Separator className="bg-slate-100" />
+
+                          {/* Dates */}
+                          <div className="space-y-5">
+                            <div>
+                              <Label className="text-lg font-semibold text-slate-800">Mögliche Termine <span className="text-[#E3000F]">*</span></Label>
+                              <p className="text-sm text-slate-500 mt-1">Bitte wählt alle Termine aus, an denen eine Teilnahme für euch möglich ist. Mehrfachauswahl erwünscht.</p>
+                            </div>
+                            <div className="grid gap-3">
+                              {dates.map((date) => {
+                                const isChecked = selectedDates.includes(date.id);
+
+                                // 1. Bereits vorhandene Stimmen + 1, falls der Nutzer es gerade ausgewählt hat
+                                const baseVotes = date.votes || 0; // Passe 'date.votes' an deinen Eigenschaftsnamen an
+                                const currentVotes = baseVotes + (isChecked ? 1 : 0);
+
+                                // 2. Maximalwert für die Prozent-Berechnung ermitteln (Höchste Stimmenzahl aller Termine oder Gesamtteilnehmer)
+                                // Damit der Balken nie über 100% geht, setzen wir mindestens '1' an.
+                                const maxVotes = Math.max(
+                                  ...dates.map((d) => (d.votes || 0) + (selectedDates.includes(d.id) ? 1 : 0)),
+                                  1
+                                );
+
+                                // 3. Prozentualer Anteil für den Ladebalken
+                                const percentage = Math.round((currentVotes / maxVotes) * 100);
+
+                                return (
+                                  <label
+                                    key={date.id}
+                                    className={`
           relative overflow-hidden flex items-center space-x-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 select-none
           ${isChecked ? 'border-emerald-500 bg-emerald-50/20' : 'border-slate-100 hover:border-slate-300 bg-white'}
         `}
-                            >
-                              {/* GRÜNER LADEBALKEN (Hintergrund-Füllung) */}
-                              <div
-                                className={`absolute left-0 top-0 bottom-0 transition-all duration-500 ease-out pointer-events-none ${isChecked ? 'bg-emerald-500/20' : 'bg-emerald-500/10'
-                                  }`}
-                                style={{ width: `${percentage}%` }}
-                              />
-
-                              {/* Checkbox */}
-                              <Checkbox
-                                id={date.id}
-                                checked={isChecked}
-                                onCheckedChange={(checked) => {
-                                  if (checked) setSelectedDates((p) => [...p, date.id]);
-                                  else setSelectedDates((p) => p.filter((id) => id !== date.id));
-                                }}
-                                className={`z-10 w-5 h-5 rounded-md transition-colors ${isChecked
-                                  ? 'data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600'
-                                  : ''
-                                  }`}
-                              />
-
-                              {/* Text-Inhalt & Stimmen-Anzeige */}
-                              <div className="z-10 space-y-1 flex-1 flex items-center justify-between">
-                                <span
-                                  className={`font-medium block transition-colors ${isChecked ? 'text-emerald-950 font-semibold' : 'text-slate-700'
-                                    }`}
-                                >
-                                  {date.weekday}, {date.date}{date.time ? `, ${date.time}` : ""} {date.location ? `- ${date.location}` : ""}
-                                </span>
-
-                                {/* Live-Counter (Anzahl der Stimmen / Prozent) */}
-                                <div className="text-right">
-                                  <span
-                                    className={`text-sm font-bold block ${isChecked ? 'text-emerald-700' : 'text-slate-500'
-                                      }`}
                                   >
-                                    {currentVotes} {currentVotes === 1 ? 'Stimme' : 'Stimmen'}
-                                  </span>
-                                  <span className="text-xs text-slate-400 font-medium">
-                                    {percentage}%
-                                  </span>
-                                </div>
-                              </div>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    </div>
+                                    {/* GRÜNER LADEBALKEN (Hintergrund-Füllung) */}
+                                    <div
+                                      className={`absolute left-0 top-0 bottom-0 transition-all duration-500 ease-out pointer-events-none ${isChecked ? 'bg-emerald-500/20' : 'bg-emerald-500/10'
+                                        }`}
+                                      style={{ width: `${percentage}%` }}
+                                    />
 
-                    {/* Notes */}
-                    <div className="space-y-3">
-                      <Label className="text-sm font-semibold text-slate-700">Hinweise / Anmerkungen</Label>
-                      <Textarea
-                        value={notes}
-                        onChange={e => setNotes(e.target.value)}
-                        placeholder="Gibt es etwas, das wir wissen sollten? (z.B. Barrierefreiheit, Ernährungsbesonderheiten, Allergien)"
-                        className="min-h-[120px] bg-slate-50 focus-visible:bg-white resize-y"
-                      />
-                    </div>
-                    <div className="space-y-3 text-sm font-medium text-slate-600 bg-white/80 px-4 py-1.5">
-                      <input type="checkbox" id="Datenschutzerklaerung" name="Datenschutzerklaerung" checked={privacyPolicyAgreement} onChange={(e) => setPrivacyPolicyAgreement(e.target.checked)}></input>
-                      <label> Wir haben die <Link className="transition-colors text-[#E3000F] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E3000F] focus-visible:ring-offset-2" to="/datenschutz"> Datenschutzerklärung </ Link> zur Kenntnis genommen und wir stimmen der Verarbeitung unserer Daten für das Forum zu.</label>
-                    </div>
+                                    {/* Checkbox */}
+                                    <Checkbox
+                                      id={date.id}
+                                      checked={isChecked}
+                                      onCheckedChange={(checked) => {
+                                        if (checked) setSelectedDates((p) => [...p, date.id]);
+                                        else setSelectedDates((p) => p.filter((id) => id !== date.id));
+                                      }}
+                                      className={`z-10 w-5 h-5 rounded-md transition-colors ${isChecked
+                                        ? 'data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600'
+                                        : ''
+                                        }`}
+                                    />
 
-                  </CardContent>
-                  {/* 🛑 HONEYPOT FELD: Für menschliche Nutzer unsichtbar */}
-                  <div style={{ display: 'none' }} aria-hidden="true">
-                    <label htmlFor="website_hp">Bitte dieses Feld leer lassen</label>
-                    <input
-                      type="text"
-                      id="website_hp"
-                      name="website_hp"
-                      tabIndex={-1}
-                      autoComplete="off"
-                      value={website_hp}
-                      onChange={(e) => setWebsiteHp(e.target.value)}
-                    />
+                                    {/* Text-Inhalt & Stimmen-Anzeige */}
+                                    <div className="z-10 space-y-1 flex-1 flex items-center justify-between">
+                                      <span
+                                        className={`font-medium block transition-colors ${isChecked ? 'text-emerald-950 font-semibold' : 'text-slate-700'
+                                          }`}
+                                      >
+                                        {date.weekday}, {date.date}{date.time ? `, ${date.time}` : ""} {date.location ? `- ${date.location}` : ""}
+                                      </span>
+
+                                      {/* Live-Counter (Anzahl der Stimmen / Prozent) */}
+                                      <div className="text-right">
+                                        <span
+                                          className={`text-sm font-bold block ${isChecked ? 'text-emerald-700' : 'text-slate-500'
+                                            }`}
+                                        >
+                                          {currentVotes} {currentVotes === 1 ? 'Stimme' : 'Stimmen'}
+                                        </span>
+                                        <span className="text-xs text-slate-400 font-medium">
+                                          {percentage}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Notes */}
+                          <div className="space-y-3">
+                            <Label className="text-sm font-semibold text-slate-700">Hinweise / Anmerkungen</Label>
+                            <Textarea
+                              value={notes}
+                              onChange={e => setNotes(e.target.value)}
+                              placeholder="Gibt es etwas, das wir wissen sollten? (z.B. Barrierefreiheit, Ernährungsbesonderheiten, Allergien)"
+                              className="min-h-[120px] bg-slate-50 focus-visible:bg-white resize-y"
+                            />
+                          </div>
+                          <div className="space-y-3 text-sm font-medium text-slate-600 bg-white/80 px-4 py-1.5">
+                            <input type="checkbox" id="Datenschutzerklaerung" name="Datenschutzerklaerung" checked={privacyPolicyAgreement} onChange={(e) => setPrivacyPolicyAgreement(e.target.checked)}></input>
+                            <label> Wir haben die <Link className="transition-colors text-[#E3000F] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E3000F] focus-visible:ring-offset-2" to="/datenschutz"> Datenschutzerklärung </ Link> zur Kenntnis genommen und wir stimmen der Verarbeitung unserer Daten für das Forum zu.</label>
+                          </div>
+
+                        </CardContent>
+                        {/* 🛑 HONEYPOT FELD: Für menschliche Nutzer unsichtbar */}
+                        <div style={{ display: 'none' }} aria-hidden="true">
+                          <label htmlFor="website_hp">Bitte dieses Feld leer lassen</label>
+                          <input
+                            type="text"
+                            id="website_hp"
+                            name="website_hp"
+                            tabIndex={-1}
+                            autoComplete="off"
+                            value={website_hp}
+                            onChange={(e) => setWebsiteHp(e.target.value)}
+                          />
+                        </div>
+                        <CardFooter className="flex flex-col sm:flex-row justify-between justify-center gap-4 border-t border-slate-100 p-6 md:p-8 bg-slate-50/50 rounded-b-xl">
+                          <Button
+                            size="lg"
+                            type="submit"
+                            onClick={handleSubmit}
+                            disabled={!gremium || !contactPerson || selectedDates.length === 1 || !privacyPolicyAgreement || isSubmitting}
+                            className="w-full sm:w-auto px-8 rounded-full shadow-md"
+                          >
+                            {isSubmitting ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <CheckCircle2 className="w-5 h-5 mr-2" />}
+                            {isSubmitting ? 'Wird gesendet...' : 'Verbindlich eintragen'}
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    </div>
                   </div>
-                  <CardFooter className="flex flex-col sm:flex-row justify-between gap-4 border-t border-slate-100 p-6 md:p-8 bg-slate-50/50 rounded-b-xl">
-                    <Button variant="ghost" size="lg" className="w-full sm:w-auto text-slate-500" onClick={() => setStep(1)}>
-                      <ArrowLeft className="w-4 h-4 mr-2" /> Zurück
-                    </Button>
-                    <Button
-                      size="lg"
-                      type="submit"
-                      onClick={handleSubmit}
-                      disabled={!gremium || !contactPerson || selectedDates.length === 0 || !privacyPolicyAgreement || isSubmitting}
-                      className="w-full sm:w-auto px-8 rounded-full shadow-md"
-                    >
-                      {isSubmitting ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <CheckCircle2 className="w-5 h-5 mr-2" />}
-                      {isSubmitting ? 'Wird gesendet...' : 'Verbindlich eintragen'}
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </div>
-            </div>
-          </div>
-        )
-        }
-
-        {/* STEP 3: Success */}
-        {
-          step === 3 && (
-            <div className="max-w-2xl mx-auto w-full text-center space-y-8 py-12 animate-in zoom-in-95 fade-in duration-700 relative z-10 pt-12">
-              <div className="w-28 h-28 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner relative">
-                <div className="absolute inset-0 rounded-full animate-ping bg-green-400 opacity-20 duration-1000" />
-                <CheckCircle2 className="w-14 h-14 relative z-10" />
-              </div>
-
-              <div className="space-y-4">
-                <h2
-                  className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight text-glow-white"
-                >
-                  Vielen Dank für eure Anmeldung!
-                </h2>
-
-                <p className="text-xl text-slate800 font-light text-glow-white">
-                  Gemeinsam gestalten wir die Zukunft. Eure Angaben wurden erfolgreich
-                  übermittelt. Wir melden uns zeitnah mit der finalen Terminbestätigung.
-                  Bei Änderungen (z.B. Anzahl der Teilnehmenden oder Namen) oder Fragen
-                  meldet euch bitte direkt und so schnell wie möglich bei uns per{" "}
-                  <a
-                    href="mailto:info@kjp.charlottenburg-wilmersdor.de"
-                    className="text-[#E3000F] font-medium underline"
-                  >
-                    E-Mail
-                  </a>.
-                </p>
-              </div>
-
-              <Card className="text-left mt-10 bg-white border-slate-200 shadow-xl shadow-slate-200/50 rounded-2xl overflow-hidden">
-                <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <h3 className="font-semibold text-slate-800">Eure Zusammenfassung</h3>
                 </div>
-                <CardContent className="p-6 md:p-8 space-y-5 text-base">
-                  <div className="grid sm:grid-cols-2 gap-5">
-                    <div className="flex gap-3 items-start">
-                      <MapPin className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                      <div>
-                        <div className="text-sm text-slate-500 font-medium">Bezirk</div>
-                        <div className="font-semibold text-slate-900">{DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name}</div>
-                      </div>
-                    </div>
-                    <div className="flex gap-3 items-start">
-                      <Building2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                      <div>
-                        <div className="text-sm text-slate-500 font-medium">Gremium</div>
-                        <div className="font-semibold text-slate-900">{gremium}</div>
-                      </div>
-                    </div>
-                    <div className="flex gap-3 items-start">
-                      <User className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                      <div>
-                        <div className="text-sm text-slate-500 font-medium">Kontaktperson</div>
-                        <div className="font-semibold text-slate-900">{contactPerson}</div>
-                      </div>
-                    </div>
-                    <div className="flex gap-3 items-start">
-                      <Mail className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                      <div>
-                        <div className="text-sm text-slate-500 font-medium">E-Mail</div>
-                        <div className="font-semibold text-slate-900">{email}</div>
-                      </div>
-                    </div>
+              </Step>
+              <Step>
+                {/* STEP 3: Success */}
+                <div className="max-w-2xl mx-auto w-full text-center space-y-8 py-12 animate-in zoom-in-95 fade-in duration-700 relative z-10 pt-12">
+                  <div className="w-28 h-28 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner relative">
+                    <div className="absolute inset-0 rounded-full animate-ping bg-green-400 opacity-20 duration-1000" />
+                    <CheckCircle2 className="w-14 h-14 relative z-10" />
                   </div>
 
-                  <Separator className="bg-slate-100" />
+                  <div className="space-y-4">
+                    <h2
+                      className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight text-glow-white"
+                    >
+                      Vielen Dank für eure Anmeldung!
+                    </h2>
 
-                  <div className="flex gap-3 items-start">
-                    <Users className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="text-sm text-slate-500 font-medium mb-1">Teilnehmende ({Number(youthCount || 0) + Number(adultCount || 0)} Personen)</div>
-                      <div className="text-slate-800">
-                        <span className="font-semibold">{youthCount || 0}</span> Jugendliche, <span className="font-semibold">{adultCount || 0}</span> Begleitungen
+                    <p className="text-xl text-slate800 font-light text-glow-white">
+                      Gemeinsam gestalten wir die Zukunft. Eure Angaben wurden erfolgreich
+                      übermittelt. Wir melden uns zeitnah mit der finalen Terminbestätigung.
+                      Bei Änderungen (z.B. Anzahl der Teilnehmenden oder Namen) oder Fragen
+                      meldet euch bitte direkt und so schnell wie möglich bei uns per{" "}
+                      <a
+                        href="mailto:info@kjp.charlottenburg-wilmersdor.de"
+                        className="text-[#E3000F] font-medium underline"
+                      >
+                        E-Mail
+                      </a>.
+                    </p>
+                  </div>
+
+                  <Card className="text-left mt-10 bg-white border-slate-200 shadow-xl shadow-slate-200/50 rounded-2xl overflow-hidden">
+                    <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      <h3 className="font-semibold text-slate-800">Eure Zusammenfassung</h3>
+                    </div>
+                    <CardContent className="p-6 md:p-8 space-y-5 text-base">
+                      <div className="grid sm:grid-cols-2 gap-5">
+                        <div className="flex gap-3 items-start">
+                          <MapPin className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-slate-500 font-medium">Bezirk</div>
+                            <div className="font-semibold text-slate-900">{DISTRICTS_MAP.find(d => d.id === selectedDistrict)?.name}</div>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 items-start">
+                          <Building2 className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-slate-500 font-medium">Gremium</div>
+                            <div className="font-semibold text-slate-900">{gremium}</div>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 items-start">
+                          <User className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-slate-500 font-medium">Kontaktperson</div>
+                            <div className="font-semibold text-slate-900">{contactPerson}</div>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 items-start">
+                          <Mail className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-slate-500 font-medium">E-Mail</div>
+                            <div className="font-semibold text-slate-900">{email}</div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+
+                      <Separator className="bg-slate-100" />
+
+                      <div className="flex gap-3 items-start">
+                        <Users className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                        <div>
+                          <div className="text-sm text-slate-500 font-medium mb-1">Teilnehmende ({Number(youthCount || 0) + Number(adultCount || 0)} Personen)</div>
+                          <div className="text-slate-800">
+                            <span className="font-semibold">{youthCount || 0}</span> Jugendliche, <span className="font-semibold">{adultCount || 0}</span> Begleitungen
+                          </div>
+                        </div>
+                      </div>
+
+                      <Separator className="bg-slate-100" />
+
+                      <div className="flex gap-3 items-start">
+                        <CalendarDays className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                        <div className="w-full">
+                          <div className="text-sm text-slate-500 font-medium mb-2">Gewählte Termine</div>
+                          <ul className="space-y-2">
+                            {selectedDates.map(id => {
+                              const date = dates.find(d => d.id === id);
+                              return (
+                                <li key={id} className="bg-slate-50 px-3 py-2 rounded-md text-sm text-slate-700 font-medium border border-slate-100">
+                                  {date.weekday}, {date.date} {date.location ? `- ${date.location}` : ""}
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <div className="flex items-center justify-center">
+                    <Magnet>
+                      <button className="rounded-xl bg-[#E30613] px-6 py-3 text-white" onClick={() => { stepperRef.current?.complete() }}>
+                        Beenden
+                      </button>
+                    </Magnet>
                   </div>
-
-                  <Separator className="bg-slate-100" />
-
-                  <div className="flex gap-3 items-start">
-                    <CalendarDays className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-                    <div className="w-full">
-                      <div className="text-sm text-slate-500 font-medium mb-2">Gewählte Termine</div>
-                      <ul className="space-y-2">
-                        {selectedDates.map(id => {
-                          const date = dates.find(d => d.id === id);
-                          return (
-                            <li key={id} className="bg-slate-50 px-3 py-2 rounded-md text-sm text-slate-700 font-medium border border-slate-100">
-                              {date.weekday}, {date.date} {date.location ? `- ${date.location}` : ""}
-                            </li>
-                          )
-                        })}
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="pt-8">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="rounded-full px-8 bg-white hover:bg-slate-50"
-                  onClick={() => {
-                    setStep(1);
-                    setSelectedDistrict(null);
-                    setGremium('');
-                    setContactPerson('');
-                    setEmail('');
-                    setYouthCount(undefined);
-                    setAdultCount(undefined);
-                    setSelectedDates([]);
-                    setNotes('');
-                    setYouthNames([]);
-                    setAdultNames([]);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                >
-                  Zurück zur Startseite
-                </Button>
-              </div>
-            </div>
-          )
-        }
-      </main >
-      <SiteFooter />
-    </div >
+                </div>
+              </Step>
+            </Stepper>
+          </main >
+          <SiteFooter />
+        </div >
+      )}
+    </>
   );
 }
 

@@ -129,7 +129,7 @@ const TextType = ({
       ease: 'power2.inOut',
     });
 
-    return () => animation.kill();
+    return () => { animation.kill() };
   }, [showCursor, cursorBlinkDuration]);
 
   // Render typed text while preserving segment classes
@@ -174,9 +174,8 @@ const TextType = ({
     showCursor && (
       <span
         ref={cursorRef}
-        className={`ml-1 inline-block ${
-          shouldHideCursor ? 'hidden' : ''
-        } ${cursorClassName}`}
+        className={`ml-1 inline-block ${shouldHideCursor ? 'hidden' : ''
+          } ${cursorClassName}`}
       >
         {cursorCharacter}
       </span>
